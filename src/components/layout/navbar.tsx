@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   Award,
   BookOpen,
@@ -15,18 +15,22 @@ import {
   Sun,
   User,
   LogOut,
+  Search,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAppStore } from '@/lib/store'
+import { getStoredUser } from '@/lib/api-client'
+import { getLevelInfo } from '@/lib/level'
 import Image from 'next/image'
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { useEffect } from 'react'
@@ -43,7 +47,8 @@ const navLinks = [
 
 export function Navbar() {
   const pathname = usePathname()
-  const { user, theme, toggleTheme, isMobileMenuOpen, setMobileMenuOpen } =
+  const router = useRouter()
+  const { user, theme, toggleTheme, isMobileMenuOpen, setMobileMenuOpen, openLogin, setSearchOpen, setUser } =
     useAppStore()
 
   useEffect(() => {
@@ -51,6 +56,11 @@ export function Navbar() {
     if (theme === 'dark') root.classList.add('dark')
     else root.classList.remove('dark')
   }, [theme])
+
+  useEffect(() => {
+    const stored = getStoredUser()
+    if (stored && !user) setUser(stored as any)
+  }, [])
 
   return (
     <header className="sticky top-0 z-50 w-full bg-[#003366] shadow-md">
@@ -86,7 +96,13 @@ export function Navbar() {
           })}
         </nav>
 
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex items-center gap-1 ml-auto">
+          <button onClick={() => setSearchOpen(true)} className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-white/75 hover:text-white hover:bg-white/10 transition-colors text-xs">
+            <Search className="h-4 w-4" />
+            <span className="hidden sm:inline">搜索</span>
+            <kbd className="hidden md:inline-flex items-center rounded border border-white/20 px-1.5 py-0.5 text-[10px] text-white/50">⌘K</kbd>
+          </button>
+
           <Button variant="ghost" size="icon" onClick={toggleTheme} className="text-white/75 hover:text-white hover:bg-white/10">
             {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
           </Button>
@@ -96,30 +112,33 @@ export function Navbar() {
               <DropdownMenuTrigger render={
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar size="sm">
-                    <AvatarFallback className="bg-[#003366] text-white text-xs">{user.name[0]}</AvatarFallback>
+                    {user.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
+                    <AvatarFallback className="bg-[#003366] text-white text-xs">{user.name?.[0] || '?'}</AvatarFallback>
                   </Avatar>
                 </Button>
               } />
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>
-                  <div className="flex flex-col">
-                    <span>{user.name}</span>
-                    <span className="text-xs text-muted-foreground">{user.studentId}</span>
-                  </div>
-                </DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col">
+                      <span className="flex items-center gap-2">{user.name} <span className="inline-flex items-center rounded bg-gradient-to-r from-amber-400 to-orange-500 px-1.5 py-0.5 text-[10px] font-bold text-white">Lv.{getLevelInfo(user.createdAt).level}</span></span>
+                      <span className="text-xs text-muted-foreground">{user.studentId}</span>
+                    </div>
+                  </DropdownMenuLabel>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push('/profile')}>
                   <User className="mr-2 h-4 w-4" />
                   个人中心
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setUser(null)}>
                   <LogOut className="mr-2 h-4 w-4" />
                   退出登录
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button variant="default" size="sm" className="bg-[#C41A1A] hover:bg-[#a01515] text-white">
+            <Button variant="default" size="sm" className="bg-[#C41A1A] hover:bg-[#a01515] text-white" onClick={openLogin}>
               登录
             </Button>
           )}

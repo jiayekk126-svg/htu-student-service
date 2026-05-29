@@ -3,9 +3,10 @@
 import { notFound, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Verified, Medal } from 'lucide-react'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { mockBlogPosts } from '@/data/blog-posts'
+import { getLevelInfo } from '@/lib/level'
 
 export default function BlogPostPage() {
   const params = useParams()
@@ -24,11 +25,12 @@ export default function BlogPostPage() {
         {/* User info */}
         <div className="flex items-center gap-2.5 mb-4">
           <Avatar size="default">
+            <AvatarImage src={post.author.avatar} />
             <AvatarFallback className="bg-[#003366] text-white text-xs">{post.author.name[0]}</AvatarFallback>
           </Avatar>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
-              <span className="text-sm font-semibold text-[#003366]">{post.author.name}</span>
+              <span className="text-sm font-semibold text-[#003366] flex items-center gap-1">{post.author.name} <span className="inline-flex items-center rounded bg-gradient-to-r from-amber-400 to-orange-500 px-1 py-0.5 text-[9px] font-bold text-white leading-none">Lv.{getLevelInfo(post.author.createdAt).level}</span></span>
               <Verified className="h-3.5 w-3.5 text-blue-500" />
               <Medal className="h-3.5 w-3.5 text-amber-500" />
               <span className="text-xs text-muted-foreground">{post.author.level}</span>

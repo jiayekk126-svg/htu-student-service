@@ -5,6 +5,8 @@ import { QueryProvider } from "@/lib/query-provider";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { FloatingAIButton } from "@/components/layout/floating-ai-button";
+import { LoginDialog } from "@/components/auth/login-dialog";
+import { GlobalSearch } from "@/components/search/global-search";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,6 +43,8 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <Footer />
           <FloatingAIButton />
+          <LoginDialog />
+          <GlobalSearch />
         </QueryProvider>
       </body>
     </html>

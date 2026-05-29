@@ -2,10 +2,11 @@
 
 import { useState } from 'react'
 import { ThumbsUp, ThumbsDown, Reply, MessageSquare } from 'lucide-react'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import type { Comment } from '@/types'
+import { getLevelInfo } from '@/lib/level'
 
 function CommentItem({ comment }: { comment: Comment }) {
   const [showReply, setShowReply] = useState(false)
@@ -14,11 +15,12 @@ function CommentItem({ comment }: { comment: Comment }) {
     <div className="space-y-3">
       <div className="flex gap-3">
         <Avatar size="sm" className="mt-0.5 shrink-0">
+          <AvatarImage src={comment.author.avatar} />
           <AvatarFallback className="text-xs">{comment.author.name[0]}</AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-            <span className="font-medium text-foreground">{comment.author.name}</span>
+            <span className="font-medium text-foreground flex items-center gap-1">{comment.author.name} <span className="inline-flex items-center rounded bg-gradient-to-r from-amber-400 to-orange-500 px-1 py-0.5 text-[9px] font-bold text-white leading-none">Lv.{getLevelInfo(comment.author.createdAt).level}</span></span>
             <span>{new Date(comment.createdAt).toLocaleDateString('zh-CN')}</span>
           </div>
           <p className="text-sm">{comment.content}</p>

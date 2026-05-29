@@ -11,9 +11,11 @@ import {
 } from '@/components/ui/dialog'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { resourceCategories } from '@/data/resources'
+import { useAppStore } from '@/lib/store'
 import type { Resource } from '@/types'
 
 function ResourceCard({ resource }: { resource: Resource }) {
+  const { user, openLogin } = useAppStore()
   return (
     <Card className="border-0 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5">
       <CardContent className="p-4 space-y-3">
@@ -34,7 +36,7 @@ function ResourceCard({ resource }: { resource: Resource }) {
           <span className="flex items-center gap-1"><Star className="h-3 w-3 text-amber-500" /> {resource.rating}</span>
           <span>{resource.fileSize}</span>
         </div>
-        <Button size="sm" variant="outline" className="w-full border-[#003366]/20 text-[#003366] hover:bg-[#003366]/5">
+        <Button onClick={() => { if (!user) openLogin() }} size="sm" variant="outline" className="w-full border-[#003366]/20 text-[#003366] hover:bg-[#003366]/5">
           <Download className="h-3.5 w-3.5 mr-1" /> 下载
         </Button>
       </CardContent>
@@ -43,6 +45,7 @@ function ResourceCard({ resource }: { resource: Resource }) {
 }
 
 export function ClientResourcesPage({ resources }: { resources: Resource[] }) {
+  const { user, openLogin } = useAppStore()
   const [category, setCategory] = useState('全部')
   const filtered = category === '全部' ? resources : resources.filter((r) => r.category === category)
 
@@ -55,7 +58,7 @@ export function ClientResourcesPage({ resources }: { resources: Resource[] }) {
         </div>
         <Dialog>
           <DialogTrigger render={
-            <Button className="bg-[#C41A1A] hover:bg-[#a01515] text-white">
+            <Button onClick={() => { if (!user) { openLogin(); return } }} className="bg-[#C41A1A] hover:bg-[#a01515] text-white">
               <Upload className="h-4 w-4 mr-1" /> 上传资源
             </Button>
           } />

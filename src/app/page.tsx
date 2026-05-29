@@ -2,12 +2,28 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
-import { ChevronLeft, ChevronRight, Award, BookOpen, MessageSquare, ShoppingBag, FolderOpen, Bot, ArrowRight, Calendar, Clock, TrendingUp } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Award, BookOpen, MessageSquare, ShoppingBag, FolderOpen, Bot, ArrowRight, Calendar, TrendingUp } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { getFeaturedCompetitions, getLatestForumPosts, getLatestResources } from '@/lib/api'
+import { allCompetitions } from '@/data/competitions'
+import { mockResources } from '@/data/resources'
+import { api } from '@/lib/api-client'
 import type { Competition, ForumPost, Resource } from '@/types'
+
+const featuredCompetitions: Competition[] = allCompetitions.map((c) => ({
+  id: c.id,
+  name: c.name,
+  url: c.url,
+  category: c.class + '类',
+  class: c.class,
+  stars: c.stars,
+  description: c.description,
+  emoji: c.emoji,
+  organizer: c.class + '类赛事',
+  status: '报名中',
+  registrationDeadline: '2026-12-31',
+  tags: [c.class + '类', c.emoji],
+  })).slice(0, 6) as Competition[]
 
 const slides = [
   {
@@ -51,9 +67,32 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    getFeaturedCompetitions().then(setCompetitions)
-    getLatestForumPosts().then(setPosts)
-    getLatestResources().then(setResources)
+    setCompetitions(featuredCompetitions)
+  }, [])
+
+  useEffect(() => {
+    api.getPosts({ isForum: true, limit: 5 }).then((res) => {
+      const mapped = (res.posts || []).map((p: Record<string, unknown>) => {
+        const u = (p.user || {}) as Record<string, unknown>
+        return {
+          id: p.id as string,
+          title: p.content as string,
+          content: p.content as string,
+          author: { id: u.id as string || p.userId as string, name: u.username as string || '匿名', avatar: u.avatar as string || '' },
+          board: (p.forumCategory || 'study') as string,
+          tags: [] as string[],
+          createdAt: p.createdAt as string,
+          updatedAt: p.createdAt as string,
+          views: (p.viewCount || 0) as number,
+          likes: 0, dislikes: 0, commentCount: 0, isPinned: false,
+        } as ForumPost
+      })
+      setPosts(mapped)
+    }).catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    setResources(mockResources.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 4))
   }, [])
 
   const goNext = () => setSlideIndex((i) => (i + 1) % slides.length)

@@ -2,11 +2,19 @@ import type { User } from '@/types'
 
 export const currentUser: User = {
   id: '2024001',
-  name: '张明',
+  name: '一只羊啊',
   avatar: '',
   studentId: '20240701001',
   major: '计算机科学与技术',
-  email: 'zhangming@stu.htu.edu.cn',
+  email: '3619114044@qq.com',
+  bio: '程序员，嵌入式，AI，JAVA',
+  skills: ['C语言', 'JAVA', 'Python', 'Pytorch', 'HTML', 'CSS', 'JavaScript', 'Spring框架'],
+  achievements: [
+    '第三十八届河南省科技创新大赛省一等奖',
+    '第二十二届河南自制教具发明赛省一等奖',
+  ],
+  level: 'Lv.5',
+  source: '荣耀400',
 }
 
 export const mockUsers: User[] = [
@@ -44,3 +52,21 @@ export const mockUsers: User[] = [
     email: 'chenxiao@stu.htu.edu.cn',
   },
 ]
+
+export const profileUser: User = {
+  ...currentUser,
+  id: 'profile_001',
+  name: '一只羊啊',
+  avatar: '',
+  studentId: '20240701001',
+  major: '计算机科学与技术',
+  email: '3619114044@qq.com',
+  bio: '程序员，嵌入式，AI，JAVA',
+  skills: ['C语言', 'JAVA', 'Python', 'Pytorch', 'HTML', 'CSS', 'JavaScript', 'Spring框架'],
+  achievements: [
+    '第三十八届河南省科技创新大赛省一等奖',
+    '第二十二届河南自制教具发明赛省一等奖',
+  ],
+  level: 'Lv.5',
+  source: '荣耀400',
+}

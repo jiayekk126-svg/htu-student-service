@@ -9,7 +9,7 @@ import { sendChatMessage } from '@/lib/api'
 import type { ChatMessage } from '@/types'
 
 export function ChatInterface() {
-  const { chatMessages, addChatMessage, clearChatMessages, aiConfig } = useAppStore()
+  const { chatMessages, addChatMessage, clearChatMessages, aiConfig, user, openLogin } = useAppStore()
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -19,6 +19,7 @@ export function ChatInterface() {
   }, [chatMessages])
 
   const handleSend = async () => {
+    if (!user) { openLogin(); return }
     if (!input.trim() || isLoading) return
     const userMessage: ChatMessage = {
       id: `msg-${Date.now()}`,

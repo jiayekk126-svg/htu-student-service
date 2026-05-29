@@ -1,11 +1,11 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Eye, ThumbsUp, ThumbsDown, MessageSquare, Pin } from 'lucide-react'
+import { ArrowLeft, Eye, MessageSquare, Pin } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { getForumPostById, getCommentsByPostId } from '@/lib/api'
-import { CommentSection } from '@/components/forum/comment-section'
+import { ForumCommentSection } from '@/components/forum/forum-comment-section'
+import { getLevelInfo } from '@/lib/level'
 
 const boardLabels: Record<string, string> = {
   study: '学习交流',
@@ -42,17 +42,18 @@ export default async function ForumPostPage({
         <h1 className="font-heading text-xl font-bold text-[#003366] md:text-2xl mb-4">{post.title}</h1>
 
         <div className="flex items-center gap-3 mb-6">
-          <Avatar size="sm">
-            <AvatarFallback className="bg-[#003366] text-white text-xs">{post.author.name[0]}</AvatarFallback>
-          </Avatar>
+          <Link href={`/profile?id=${post.author.id}`}>
+            <Avatar size="sm">
+              <AvatarImage src={post.author.avatar} />
+              <AvatarFallback className="bg-[#003366] text-white text-xs">{post.author.name?.[0] || '?'}</AvatarFallback>
+            </Avatar>
+          </Link>
           <div className="text-sm">
-            <span className="font-medium text-[#003366]">{post.author.name}</span>
+            <Link href={`/profile?id=${post.author.id}`} className="font-medium text-[#003366] hover:text-[#C41A1A] flex items-center gap-1">{post.author.name} <span className="inline-flex items-center rounded bg-gradient-to-r from-amber-400 to-orange-500 px-1 py-0.5 text-[9px] font-bold text-white leading-none">Lv.{getLevelInfo(post.author.createdAt).level}</span></Link>
             <span className="text-muted-foreground ml-2">{new Date(post.createdAt).toLocaleDateString('zh-CN')}</span>
           </div>
           <div className="flex items-center gap-3 text-xs text-muted-foreground ml-auto">
             <span className="flex items-center gap-1"><Eye className="h-3.5 w-3.5" /> {post.views}</span>
-            <span className="flex items-center gap-1"><ThumbsUp className="h-3.5 w-3.5" /> {post.likes}</span>
-            <span className="flex items-center gap-1"><ThumbsDown className="h-3.5 w-3.5" /> {post.dislikes}</span>
             <span className="flex items-center gap-1"><MessageSquare className="h-3.5 w-3.5" /> {post.commentCount}</span>
           </div>
         </div>
@@ -66,19 +67,10 @@ export default async function ForumPostPage({
             {post.tags.map((tag) => (<Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>))}
           </div>
         )}
-
-        <div className="flex items-center gap-3 mt-6 pt-4 border-t border-[#003366]/5">
-          <Button variant="outline" size="sm" className="flex items-center gap-1 border-[#003366]/20 text-[#003366]">
-            <ThumbsUp className="h-4 w-4" /> 点赞 {post.likes}
-          </Button>
-          <Button variant="outline" size="sm" className="flex items-center gap-1 border-[#003366]/20 text-muted-foreground">
-            <ThumbsDown className="h-4 w-4" /> {post.dislikes}
-          </Button>
-        </div>
       </article>
 
       <div className="rounded-xl border border-[#003366]/10 bg-white p-6 shadow-sm">
-        <CommentSection comments={comments} postId={post.id} />
+        <ForumCommentSection comments={comments} postId={post.id} />
       </div>
     </div>
   )

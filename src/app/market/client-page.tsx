@@ -11,14 +11,20 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from '@/components/ui/dialog'
 import { productCategories } from '@/data/products'
+import { useAppStore } from '@/lib/store'
 import type { Product } from '@/types'
 
 function ProductCard({ product }: { product: Product }) {
+  const [imgError, setImgError] = useState(false)
   return (
     <Card className="border-0 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5">
       <CardContent className="p-0">
-        <div className="aspect-[4/3] bg-[#F5F5F5] flex items-center justify-center rounded-t-xl">
-          <ImageIcon className="h-10 w-10 text-muted-foreground/30" />
+        <div className="aspect-[4/3] bg-[#F5F5F5] flex items-center justify-center rounded-t-xl overflow-hidden">
+          {product.images?.[0] && !imgError ? (
+            <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" onError={() => setImgError(true)} />
+          ) : (
+            <ImageIcon className="h-10 w-10 text-muted-foreground/30" />
+          )}
         </div>
         <div className="p-3 space-y-2">
           <div className="flex items-start justify-between gap-2">
@@ -48,6 +54,7 @@ function ProductCard({ product }: { product: Product }) {
 }
 
 export function ClientMarketPage({ products }: { products: Product[] }) {
+  const { user, openLogin } = useAppStore()
   const [category, setCategory] = useState('全部')
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -66,7 +73,7 @@ export function ClientMarketPage({ products }: { products: Product[] }) {
         </div>
         <Dialog>
           <DialogTrigger render={
-            <Button className="bg-[#C41A1A] hover:bg-[#a01515] text-white">
+            <Button onClick={() => { if (!user) { openLogin(); return } }} className="bg-[#C41A1A] hover:bg-[#a01515] text-white">
               <Plus className="h-4 w-4 mr-1" /> 发布商品
             </Button>
           } />

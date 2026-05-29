@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Search, ExternalLink, Info, Star, ChevronRight } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -67,8 +68,17 @@ function CompCard({ comp }: { comp: CompEntry }) {
 }
 
 export default function CompetitionsPage() {
-  const [activeTab, setActiveTab] = useState('A类赛事')
+  const searchParams = useSearchParams()
+  const tabParam = searchParams.get('tab')
+  const tabMap: Record<string, string> = { A: 'A类赛事', B: 'B类赛事', C: 'C类赛事' }
+  const [activeTab, setActiveTab] = useState(tabParam ? (tabMap[tabParam] || 'A类赛事') : 'A类赛事')
   const [searchQuery, setSearchQuery] = useState('')
+
+  useEffect(() => {
+    if (tabParam && tabMap[tabParam]) {
+      setActiveTab(tabMap[tabParam])
+    }
+  }, [tabParam])
 
   const renderContent = () => {
     if (activeTab === '新生刚需' || activeTab === '学校官网' || activeTab === '考试考证') {

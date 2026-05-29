@@ -2,8 +2,9 @@ import Link from 'next/link'
 import { MessageSquare, Eye, ThumbsUp, Pin } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import type { ForumPost } from '@/types'
+import { getLevelInfo } from '@/lib/level'
 
 const boardLabels: Record<string, string> = {
   study: '学习交流',
@@ -26,6 +27,7 @@ export function PostCard({ post }: { post: ForumPost }) {
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
             <Avatar size="sm" className="mt-0.5 shrink-0">
+              <AvatarImage src={post.author.avatar} />
               <AvatarFallback className="text-xs">{post.author.name[0]}</AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1">
@@ -45,7 +47,7 @@ export function PostCard({ post }: { post: ForumPost }) {
                 {post.content}
               </p>
               <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-muted-foreground">
-                <span>{post.author.name}</span>
+                <span className="flex items-center gap-1">{post.author.name} <span className="inline-flex items-center rounded bg-gradient-to-r from-amber-400 to-orange-500 px-1 py-0.5 text-[9px] font-bold text-white leading-none">Lv.{getLevelInfo(post.author.createdAt).level}</span></span>
                 <span>{new Date(post.createdAt).toLocaleDateString('zh-CN')}</span>
                 <span className="flex items-center gap-1">
                   <MessageSquare className="h-3 w-3" /> {post.commentCount}

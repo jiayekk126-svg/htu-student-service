@@ -11,6 +11,7 @@ export interface User {
   contact?: string
   level?: string
   source?: string
+  createdAt?: string
 }
 
 export interface Competition {
@@ -36,6 +37,25 @@ export interface CompetitionLink {
   note?: string
 }
 
+export interface DeviceInfo {
+  type: 'mobile' | 'desktop'
+  name: string
+}
+
+export interface LocationInfo {
+  lat: number
+  lng: number
+  city: string
+}
+
+export interface BlogComment {
+  id: string
+  content: string
+  author: User
+  createdAt: string
+  likes: number
+}
+
 export interface BlogPost {
   id: string
   title?: string
@@ -48,6 +68,32 @@ export interface BlogPost {
   shares: number
   favorites: number
   tags?: string[]
+  device?: DeviceInfo
+  location?: LocationInfo
+  commentList?: BlogComment[]
+  likedBy?: string[]
+  bookmarkedBy?: string[]
+  sharedBy?: string[]
+}
+
+export interface PrivateMessage {
+  id: string
+  fromUserId: string
+  toUserId: string
+  content: string
+  createdAt: string
+}
+
+export interface Conversation {
+  userId: string
+  messages: PrivateMessage[]
+}
+
+export interface GitHubInfo {
+  username: string
+  avatar: string
+  repos: number
+  followers: number
 }
 
 export interface ForumPost {
@@ -122,4 +168,36 @@ export interface AIConfig {
   temperature: number
   maxTokens: number
   systemPrompt: string
+}
+
+export interface AuthState {
+  isAuthenticated: boolean
+  isLoginOpen: boolean
+  loginMode: 'email' | 'studentId'
+  login: (emailOrId: string, password: string) => Promise<boolean>
+  register: (data: RegisterData) => Promise<boolean>
+  logout: () => void
+  openLogin: () => void
+  closeLogin: () => void
+  setLoginMode: (mode: 'email' | 'studentId') => void
+}
+
+export interface RegisterData {
+  name: string
+  email: string
+  studentId: string
+  password: string
+  major: string
+}
+
+export interface SearchResult {
+  id: string
+  title: string
+  summary: string
+  module: 'competition' | 'blog' | 'resource' | 'forum' | 'product'
+  url: string
+  hotScore: number
+  clicks: number
+  badge?: string
+  emoji?: string
 }
